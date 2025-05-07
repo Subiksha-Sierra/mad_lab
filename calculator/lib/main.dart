@@ -20,7 +20,6 @@ class CalculatorApp extends StatelessWidget {
 class CalculatorScreen extends StatefulWidget {
   @override
   _CalculatorScreenState createState() => _CalculatorScreenState();
-  
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
@@ -29,6 +28,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   String output = '';
   String fromBase = 'DEC';
   String toBase = 'BIN';
+  bool justCalculated = false;
 
   final List<String> arithmeticButtons = [
     'C', '/', '*', '-',
@@ -40,56 +40,58 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   final List<String> bases = ['BIN', 'OCT', 'DEC', 'HEX'];
 
+  String formatOutput(double value) {
+    return value == value.toInt() ? value.toInt().toString() : value.toString();
+  }
+
   void _onButtonPressed(String value) {
-  setState(() {
-    if (value == 'C') {
-      input = '';
-      output = '';
-      justCalculated = false;
-    } else if (value == '<') {
-      if (input.isNotEmpty) {
-        input = input.substring(0, input.length - 1);
-      }
-    } else if (value == '=') {
-      try {
-        if (isArithmeticMode) {
-          Parser p = Parser();
-          Expression exp = p.parse(input);
-          ContextModel cm = ContextModel();
-          double eval = exp.evaluate(EvaluationType.REAL, cm);
-          output = eval.toString().endsWith('.0')
-              ? eval.toStringAsFixed(0)
-              : eval.toString();
-        } else {
-          int num = int.parse(input, radix: _getRadix(fromBase));
-          output = num.toRadixString(_getRadix(toBase)).toUpperCase();
-        }
-        justCalculated = true;
-      } catch (e) {
-        output = 'Error';
-      }
-    } else {
-      if (justCalculated) {
-        if (isArithmeticMode &&
-            (value == '+' || value == '-' || value == '*' || value == '/')) {
-          input = output + value;
-        } else {
-          input = value;
-        }
+    setState(() {
+      if (value == 'C' || value == 'AC') {
+        input = '';
         output = '';
         justCalculated = false;
-      } else {
-        // prevent multiple decimal points in a number
-        if (value == '.' && input.isNotEmpty) {
-          final lastToken = input.split(RegExp(r'[+\-*/]')).last;
-          if (lastToken.contains('.')) return;
+      } else if (value == '<') {
+        if (input.isNotEmpty) {
+          input = input.substring(0, input.length - 1);
         }
-        input += value;
+      } else if (value == '=') {
+        try {
+          if (isArithmeticMode) {
+            Parser p = Parser();
+            Expression exp = p.parse(input);
+            ContextModel cm = ContextModel();
+            double eval = exp.evaluate(EvaluationType.REAL, cm);
+            output = formatOutput(eval);
+            input = output; // Make result the new input
+          } else {
+            int num = int.parse(input, radix: _getRadix(fromBase));
+            output = num.toRadixString(_getRadix(toBase)).toUpperCase();
+            input = output;
+          }
+          justCalculated = true;
+        } catch (e) {
+          output = 'Error';
+        }
+      } else {
+        if (justCalculated) {
+          if (isArithmeticMode &&
+              (value == '+' || value == '-' || value == '*' || value == '/')) {
+            input = output + value;
+          } else {
+            input = value;
+          }
+          output = '';
+          justCalculated = false;
+        } else {
+          if (value == '.' && input.isNotEmpty) {
+            final lastToken = input.split(RegExp(r'[+\-*/]')).last;
+            if (lastToken.contains('.')) return;
+          }
+          input += value;
+        }
       }
-    }
-  });
-}
-
+    });
+  }
 
   int _getRadix(String base) {
     switch (base) {
@@ -112,7 +114,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          SizedBox(height: 50), // Move navigation down
+          SizedBox(height: 50),
           SwitchListTile(
             title: Text(isArithmeticMode ? 'Arithmetic Mode' : 'Conversion Mode'),
             value: isArithmeticMode,
@@ -140,7 +142,10 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               alignment: Alignment.centerRight,
               child: Text(
                 output,
-                style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.blue),
+                style: const TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue),
               ),
             ),
           ),
@@ -183,7 +188,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             child: GridView.builder(
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, // Four buttons per row
+                crossAxisCount: 4,
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
               ),

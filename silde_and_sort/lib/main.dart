@@ -39,7 +39,7 @@ class _PuzzlePageState extends State<PuzzlePage> {
     secondsPassed = 180;
 
     int totalTiles = gridSize * gridSize;
-    
+
     // Create a list of numbers from 0 to gridSize^2 - 1
     do {
       tiles = List.generate(totalTiles - 1, (index) => index + 1)..add(0);
@@ -48,6 +48,7 @@ class _PuzzlePageState extends State<PuzzlePage> {
 
     _startTimer();
   }
+
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
@@ -60,12 +61,10 @@ class _PuzzlePageState extends State<PuzzlePage> {
     });
   }
 
-  // Stop the timer
   void _stopTimer() {
     _timer?.cancel();
   }
 
-  // Check if the puzzle is solvable
   bool _isSolvable(List<int> tiles) {
     int inversions = 0;
     for (int i = 0; i < tiles.length - 1; i++) {
@@ -79,7 +78,6 @@ class _PuzzlePageState extends State<PuzzlePage> {
     return (inversions + blankRow) % 2 == 0;
   }
 
-  // Check if two tiles are adjacent
   bool _isAdjacent(int a, int b) {
     int rowA = a ~/ gridSize;
     int colA = a % gridSize;
@@ -89,7 +87,6 @@ class _PuzzlePageState extends State<PuzzlePage> {
         (colA == colB && (rowA - rowB).abs() == 1);
   }
 
-  // When a tile is tapped, move it if it's adjacent to the empty tile
   void _onTileTap(int index) {
     int emptyIndex = tiles.indexOf(0);
     if (_isAdjacent(index, emptyIndex)) {
@@ -105,7 +102,6 @@ class _PuzzlePageState extends State<PuzzlePage> {
     }
   }
 
-  // Check if the puzzle is in a solved state
   bool _isCompleted() {
     for (int i = 0; i < tiles.length - 1; i++) {
       if (tiles[i] != i + 1) return false;
@@ -113,13 +109,12 @@ class _PuzzlePageState extends State<PuzzlePage> {
     return tiles[tiles.length - 1] == 0;
   }
 
-  // Show the Win dialog
   void _showWinDialog() {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('You Win! 🎉'),
-        content: Text('Time taken: ${_formatTime(180 -0 secondsPassed)}'),
+        content: Text('Time taken: ${_formatTime(180 - secondsPassed)}'),
         actions: [
           TextButton(
             onPressed: () {
@@ -135,7 +130,6 @@ class _PuzzlePageState extends State<PuzzlePage> {
     );
   }
 
-  // Show the Game Over dialog
   void _showGameOverDialog() {
     showDialog(
       context: context,
@@ -157,21 +151,18 @@ class _PuzzlePageState extends State<PuzzlePage> {
     );
   }
 
-  // Format the time as MM:SS
   String _formatTime(int seconds) {
     final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
     final secs = (seconds % 60).toString().padLeft(2, '0');
     return "$minutes:$secs";
   }
 
-  // Dispose the timer when the widget is disposed
   @override
   void dispose() {
     _stopTimer();
     super.dispose();
   }
 
-  // Build the grid and UI
   @override
   Widget build(BuildContext context) {
     double tileSize = MediaQuery.of(context).size.width / gridSize;
@@ -224,7 +215,8 @@ class _PuzzlePageState extends State<PuzzlePage> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: value == 0 ? Colors.transparent : Colors.white,
+                          color:
+                              value == 0 ? Colors.transparent : Colors.white,
                         ),
                       ),
                     ),
@@ -252,7 +244,6 @@ class _PuzzlePageState extends State<PuzzlePage> {
     );
   }
 
-  // Build buttons to select the grid size (3x3, 4x4, 5x5)
   Widget _buildGridSizeButton(int size) {
     return ElevatedButton(
       onPressed: () {

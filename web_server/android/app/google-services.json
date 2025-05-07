@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "694031474488",
+    "project_id": "mad-exp8-6c05c",
+    "storage_bucket": "mad-exp8-6c05c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:694031474488:android:9c69c71b32a578f5dd6bcd",
+        "android_client_info": {
+          "package_name": "com.alicia.pushdemo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-R_maEWxrMwvJCSERi2_8SMhr9bF-Rgg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
